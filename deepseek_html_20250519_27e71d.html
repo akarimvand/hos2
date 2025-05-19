@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ICAPS - Integrated Commissioning And Progress System</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-dark: #0d6efd;
+            --primary-light: #86b7fe;
+            --secondary: #6c757d;
+            --success: #198754;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --light: #f8f9fa;
+            --dark: #212529;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .sidebar {
+            background-color: var(--primary-dark);
+            color: white;
+            height: 100vh;
+            position: fixed;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .status-badge {
+            font-size: 0.8rem;
+            padding: 5px 8px;
+        }
+        
+        .progress-thin {
+            height: 5px;
+        }
+        
+        .task-card {
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .system-tree {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .system-tree li {
+            padding: 5px 0;
+        }
+        
+        .system-tree .toggle {
+            cursor: pointer;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar col-md-3 col-lg-2 d-md-block">
+        <div class="text-center my-4">
+            <h4>ICAPS</h4>
+            <p class="text-muted small">v3.21</p>
+        </div>
+        
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="#dashboard" data-bs-toggle="tab">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#tasks" data-bs-toggle="tab">
+                    <i class="fas fa-tasks me-2"></i>Task Management
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#punchlist" data-bs-toggle="tab">
+                    <i class="fas fa-list-check me-2"></i>Punch List
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#reports" data-bs-toggle="tab">
+                    <i class="fas fa-chart-bar me-2"></i>Reports
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#setup" data-bs-toggle="tab">
+                    <i class="fas fa-cog me-2"></i>System Setup
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#search" data-bs-toggle="tab">
+                    <i class="fas fa-search me-2"></i>Advanced Search
+                </a>
+            </li>
+        </ul>
+        
+        <div class="position-absolute bottom-0 start-0 p-3 w-100">
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="userDropdown" data-bs-toggle="dropdown">
+                    <img src="https://via.placeholder.com/40" alt="User" class="rounded-circle me-2">
+                    <span>John Doe</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="tab-content">
+            <!-- Dashboard Tab -->
+            <div class="tab-pane fade show active" id="dashboard">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Dashboard</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button class="btn btn-sm btn-outline-secondary">Export</button>
+                            <button class="btn btn-sm btn-outline-secondary">Print</button>
+                        </div>
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle">
+                            <i class="fas fa-calendar me-1"></i>This week
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Open Tasks</h6>
+                                        <h2 class="card-text">142</h2>
+                                    </div>
+                                    <i class="fas fa-tasks fa-3x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Completed Tasks</h6>
+                                        <h2 class="card-text">89</h2>
+                                    </div>
+                                    <i class="fas fa-check-circle fa-3x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Open Punch Items</h6>
+                                        <h2 class="card-text">56</h2>
+                                    </div>
+                                    <i class="fas fa-list-check fa-3x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-danger mb-3">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h6 class="card-title">Overdue Tasks</h6>
+                                        <h2 class="card-text">23</h2>
+                                    </div>
+                                    <i class="fas fa-exclamation-triangle fa-3x opacity-50"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Task Progress by System</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>System</th>
+                                                <th>Progress</th>
+                                                <th>Tasks</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>0101 - Electrical</td>
+                                                <td>
+                                                    <div class="progress progress-thin">
+                                                        <div class="progress-bar bg-success" style="width: 85%"></div>
+                                                    </div>
+                                                </td>
+                                                <td>32/38</td>
+                                                <td><span class="badge bg-success">RFC Ready</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>0201 - Instrumentation</td>
+                                                <td>
+                                                    <div class="progress progress-thin">
+                                                        <div class="progress-bar bg-warning" style="width: 65%"></div>
+                                                    </div>
+                                                </td>
+                                                <td>26/40</td>
+                                                <td><span class="badge bg-warning">In Progress</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>0301 - Mechanical</td>
+                                                <td>
+                                                    <div class="progress progress-thin">
+                                                        <div class="progress-bar bg-danger" style="width: 30%"></div>
+                                                    </div>
+                                                </td>
+                                                <td>12/40</td>
+                                                <td><span class="badge bg-danger">Delayed</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>0401 - Piping</td>
+                                                <td>
+                                                    <div class="progress progress-thin">
+                                                        <div class="progress-bar bg-info" style="width: 45%"></div>
+                                                    </div>
+                                                </td>
+                                                <td>18/40</td>
+                                                <td><span class="badge bg-info">In Progress</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-header">
+                                <h5>Quick Actions</h5>
+                            </div>
+                            <div class="card-body">
+                                <button class="btn btn-primary w-100 mb-2">
+                                    <i class="fas fa-plus me-2"></i>Create New Task
+                                </button>
+                                <button class="btn btn-success w-100 mb-2">
+                                    <i class="fas fa-list-check me-2"></i>Add Punch Item
+                                </button>
+                                <button class="btn btn-info w-100 mb-2">
+                                    <i class="fas fa-file-export me-2"></i>Export Data
+                                </button>
+                                <button class="btn btn-warning w-100 mb-2">
+                                    <i class="fas fa-print me-2"></i>Print OPERCOM Sheets
+                                </button>
+                                <button class="btn btn-secondary w-100">
+                                    <i class="fas fa-filter me-2"></i>Global Filter
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header">
+                                <h5>Recent Activities</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="list-group list-group-flush">
+                                    <div class="list-group-item">
+                                        <small class="text-muted">10 min ago</small>
+                                        <p class="mb-1">Task <strong>CCK-0101-045</strong> completed by John Doe</p>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <small class="text-muted">25 min ago</small>
+                                        <p class="mb-1">New punch item <strong>PL-0201-112</strong> created</p>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <small class="text-muted">1 hour ago</small>
+                                        <p class="mb-1">System <strong>0301</strong> marked as RFC Ready</p>
+                                    </div>
+                                    <div class="list-group-item">
+                                        <small class="text-muted">2 hours ago</small>
+                                        <p class="mb-1">Task <strong>FTS-0401-078</strong> started</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Task Management Tab -->
+            <div class="tab-pane fade" id="tasks">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Task Management</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button class="btn btn-sm btn-outline-secondary">Export</button>
+                            <button class="btn btn-sm btn-outline-secondary">Print</button>
+                        </div>
+                        <button class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i>New Task
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label class="form-label">Task Type</label>
+                                        <select class="form-select">
+                                            <option>All Types</option>
+                                            <option>CCK - Compliance Check</option>
+                                            <option>STS - Static Test</option>
+                                            <option>PIP - Piping Test</option>
+                                            <option>PRC - Preliminary Checks</option>
+                                            <option>FTS - Functional Test</option>
+                                            <option>OTS - Operational Test</option>
+                                            <option>PVP - Piping & Vessels Prep</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">System</label>
+                                        <select class="form-select">
+                                            <option>All Systems</option>
+                                            <option>0101 - Electrical</option>
+                                            <option>0201 - Instrumentation</option>
+                                            <option>0301 - Mechanical</option>
+                                            <option>0401 - Piping</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Status</label>
+                                        <select class="form-select">
+                                            <option>All Statuses</option>
+                                            <option>Not Started</option>
+                                            <option>In Progress</option>
+                                            <option>Completed</option>
+                                            <option>On Hold</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Date Range</label>
+                                        <input type="text" class="form-control" placeholder="Select date range">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="mb-0">Tasks</h5>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-th-list"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-th-large"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Task ID</th>
+                                                <th>Description</th>
+                                                <th>System</th>
+                                                <th>Type</th>
+                                                <th>Status</th>
+                                                <th>Progress</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>CCK-0101-045</td>
+                                                <td>Electrical Panel Compliance Check</td>
+                                                <td>0101 - Electrical</td>
+                                                <td><span class="badge bg-info">CCK</span></td>
+                                                <td><span class="badge bg-success">Completed</span></td>
+                                                <td>
+                                                    <div class="progress progress-thin">
+                                                        <div class="progress-bar bg-success" style="width: 100%"></div>
+                                                    </div>
+                                                </td>
+                                                <td>2023-05-10</td>
+                                                <td>2023-05-15</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-print"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>FTS-0201-112</td>
+                                                <td>Control System Functional Test</td>
+                                                <td>0201 - Instrumentation</td>
+                                                <td><span class="badge bg-warning">FTS</span></td>
+                                                <td><span class="badge bg-primary">In Progress</span></td>
+                                                <td>
+                                                    <div class="progress progress-thin">
+                                                        <div class="progress-bar bg-primary" style="width: 65%"></div>
+                                                    </div>
+                                                </td>
+                                                <td>2023-05-12</td>
+                                                <td>2023-05-20</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-print"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>PVP-0401-078</td>
+                                                <td>Piping System Preparation</td>
+                                                <td>0401 - Piping</td>
+                                                <td><span class="badge bg-danger">PVP</span></td>
+                                                <td><span class="badge bg-warning">Not Started</span></td>
+                                                <td>
+                                                    <div class="progress progress-thin">
+                                                        <div class="progress-bar bg-warning" style="width: 0%"></div>
+                                                    </div>
+                                                </td>
+                                                <td>2023-05-15</td>
+                                                <td>2023-05-25</td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                                    <button class="btn btn-sm btn-outline-secondary"><i class="fas fa-print"></i></button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <nav aria-label="Page navigation">
+                                    <ul class="pagination justify-content-center mt-3">
+                                        <li class="page-item disabled">
+                                            <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                        </li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item">
+                                            <a class="page-link" href="#">Next</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Punch List Tab -->
+            <div class="tab-pane fade" id="punchlist">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Punch List</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button class="btn btn-sm btn-outline-secondary">Export</button>
+                            <button class="btn btn-sm btn-outline-secondary">Print</button>
+                        </div>
+                        <button class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i>New Punch Item
+                        </button>
+                    </div>
+                </div>
+                
+                <ul class="nav nav-tabs mb-3">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-bs-toggle="tab" href="#openPunches">Open (56)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#completedPunches">Completed (23)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#priorityA">Priority A (12)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#priorityB">Priority B (28)</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-bs-toggle="tab" href="#priorityC">Priority C (16)</a>
+                    </li>
+                </ul>
+                
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="openPunches">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>Punch ID</th>
+                                                <th>Description</th>
+                                                <th>System</th>
+                                                <th>Equipment</th>
+                                                <th>Discipline</th>
+                                                <th>Priority</th>
+                                                <th>Created</th>
+                                                <th>Due Date</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>PL-0101-112</td>
+                                                <td>Missing cable gland on panel</td>
+                                                <td>0101 - Electrical</td>
+                                                <td>EL-PNL-001</td>
+                                                <td>Electrical</td>
+                                                <td><span class="badge bg-danger">A</span></td>
+                                                <td>2023-05-01</td>
+                                                <td>2023-05-10</td>
+                                                <td><span class="badge bg-warning">Open</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                                    <button class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>PL-0201-045</td>
+                                                <td>Instrument tag missing</td>
+                                                <td>0201 - Instrumentation</td>
+                                                <td>FI-001</td>
+                                                <td>Instrument</td>
+                                                <td><span class="badge bg-warning">B</span></td>
+                                                <td>2023-05-03</td>
+                                                <td>2023-05-15</td>
+                                                <td><span class="badge bg-warning">Open</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                                    <button class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>PL-0401-078</td>
+                                                <td>Piping support not installed</td>
+                                                <td>0401 - Piping</td>
+                                                <td>P-001</td>
+                                                <td>Mechanical</td>
+                                                <td><span class="badge bg-info">C</span></td>
+                                                <td>2023-05-05</td>
+                                                <td>2023-05-20</td>
+                                                <td><span class="badge bg-warning">Open</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-primary"><i class="fas fa-eye"></i></button>
+                                                    <button class="btn btn-sm btn-outline-success"><i class="fas fa-check"></i></button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reports Tab -->
+            <div class="tab-pane fade" id="reports">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Reports</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button class="btn btn-sm btn-outline-secondary">Export</button>
+                            <button class="btn btn-sm btn-outline-secondary">Print</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Overall Progress Report</h5>
+                                <p class="card-text">Summary of all systems progress status</p>
+                                <a href="#" class="btn btn-primary">Generate</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Punch List Report</h5>
+                                <p class="card-text">Detailed punch list items by status and priority</p>
+                                <a href="#" class="btn btn-primary">Generate</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Delayed Tasks Report</h5>
+                                <p class="card-text">Tasks that are behind schedule</p>
+                                <a href="#" class="btn btn-primary">Generate</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">RFC/RFSU Status</h5>
+                                <p class="card-text">Ready for Commissioning/Start-up status</p>
+                                <a href="#" class="btn btn-primary">Generate</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Manpower Report</h5>
+                                <p class="card-text">Resource allocation and manhours</p>
+                                <a href="#" class="btn btn-primary">Generate</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title">Custom Report</h5>
+                                <p class="card-text">Create your own report with filters</p>
+                                <a href="#" class="btn btn-primary">Create</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- System Setup Tab -->
+            <div class="tab-pane fade" id="setup">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">System Setup</h1>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="list-group list-group-flush">
+                                <a href="#projectSetup" class="list-group-item list-group-item-action active" data-bs-toggle="tab">
+                                    Project & Subprojects
+                                </a>
+                                <a href="#workLocations" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                                    Work Locations
+                                </a>
+                                <a href="#punchActors" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                                    Punch List Actors
+                                </a>
+                                <a href="#equipmentTypes" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                                    Equipment & Task Types
+                                </a>
+                                <a href="#punchActivities" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                                    Punch List Activities
+                                </a>
+                                <a href="#punchPriorities" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                                    Punch List Priorities
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-9">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="projectSetup">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5>Project & Subprojects</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form>
+                                            <div class="mb-3">
+                                                <label class="form-label">Country</label>
+                                                <input type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Project</label>
+                                                <input type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Subproject</label>
+                                                <input type="text" class="form-control">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Level 1 Sequence</label>
+                                                <input type="text" class="form-control">
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">Start Date</label>
+                                                    <input type="date" class="form-control">
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <label class="form-label">End Date</label>
+                                                    <input type="date" class="form-control">
+                                                </div>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Save</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Advanced Search Tab -->
+            <div class="tab-pane fade" id="search">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Advanced Search</h1>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card">
+                            <div class="list-group list-group-flush">
+                                <a href="#searchSubsystems" class="list-group-item list-group-item-action active" data-bs-toggle="tab">
+                                    Subsystems
+                                </a>
+                                <a href="#searchBF" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                                    Basic Functions
+                                </a>
+                                <a href="#searchTestPacks" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                                    Test Packs
+                                </a>
+                                <a href="#searchItems" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                                    Items
+                                </a>
+                                <a href="#searchTasks" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                                    Tasks
+                                </a>
+                                <a href="#searchPunchList" class="list-group-item list-group-item-action" data-bs-toggle="tab">
+                                    Punch List
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-9">
+                        <div class="tab-content">
+                            <div class="tab-pane fade show active" id="searchSubsystems">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <label class="form-label">Search Criteria</label>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" placeholder="Enter search term...">
+                                                <button class="btn btn-primary" type="button">Search</button>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label class="form-label">Filter by</label>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <select class="form-select mb-2">
+                                                        <option>All Systems</option>
+                                                        <option>0101 - Electrical</option>
+                                                        <option>0201 - Instrumentation</option>
+                                                        <option>0301 - Mechanical</option>
+                                                        <option>0401 - Piping</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <select class="form-select mb-2">
+                                                        <option>All Statuses</option>
+                                                        <option>Not Started</option>
+                                                        <option>In Progress</option>
+                                                        <option>Completed</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <select class="form-select mb-2">
+                                                        <option>All Disciplines</option>
+                                                        <option>Electrical</option>
+                                                        <option>Instrumentation</option>
+                                                        <option>Mechanical</option>
+                                                        <option>Piping</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Subsystem ID</th>
+                                                        <th>Description</th>
+                                                        <th>System</th>
+                                                        <th>Status</th>
+                                                        <th>RFC Date</th>
+                                                        <th>RFSU Date</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <td>0101-01</td>
+                                                        <td>Main Electrical Panel</td>
+                                                        <td>0101 - Electrical</td>
+                                                        <td><span class="badge bg-success">RFC Ready</span></td>
+                                                        <td>2023-05-10</td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>0201-03</td>
+                                                        <td>Control System</td>
+                                                        <td>0201 - Instrumentation</td>
+                                                        <td><span class="badge bg-primary">In Progress</span></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>0401-05</td>
+                                                        <td>Process Piping</td>
+                                                        <td>0401 - Piping</td>
+                                                        <td><span class="badge bg-warning">Not Started</span></td>
+                                                        <td></td>
+                                                        <td></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Simple script to handle tree view toggle
+        document.querySelectorAll('.toggle').forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const parent = this.closest('li');
+                const children = parent.querySelector('ul');
+                if (children) {
+                    children.style.display = children.style.display === 'none' ? 'block' : 'none';
+                    this.textContent = children.style.display === 'none' ? '+' : '-';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
